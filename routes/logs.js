@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var es = require('../es');
-var index= 'gardenlog-dev';
+var config = require('../config');
 
 router.get('/', function(req, res, next) {
     es.ping({
@@ -22,7 +22,7 @@ router.post('/', function (req, res, next) {
 
 // Search through logs, it's the main entry point for the API.
 router.post('/_search', function(req, res, next) {
-    var params = Object.assign(req.body, {index: index});
+    var params = Object.assign(req.body, {index: config.es_index});
     es.search(params).then(function (body) {
         res.send(body);
     }, function (error) {
@@ -33,7 +33,7 @@ router.post('/_search', function(req, res, next) {
 // Get a single log, based on its id.
 router.get('/:log_id', function (req, res, next) {
     es.get({
-        index: index,
+        index: config.es_index,
         type: 'log',
         id: req.params.log_id
     }).then(function (body) {
@@ -45,7 +45,7 @@ router.get('/:log_id', function (req, res, next) {
 
 router.delete('/:log_id', function (req, res, next) {
     es.delete({
-        index: index,
+        index: config.es_index,
         type: 'log',
         id: req.params.log_id
     }).then(function (body) {
